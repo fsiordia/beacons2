@@ -5,6 +5,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 import com.estimote.sdk.SystemRequirementsChecker;
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
@@ -36,6 +43,8 @@ public class MainActivity extends AppCompatActivity {
     //final String salaJuntas = new String("43544:12085");
 
     private static final Map<String, List<String>> PLACES_BY_BEACONS;
+
+    public static final String PREFS_NAME = "MyPrefsFile";
 
     // TODO: replace "<major>:<minor>" strings to match your own beacons.
     static {
@@ -80,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     // TODO: update the UI here
 
                     updateInterfaz(places);
-
+                    sendRequest("Paco"+" está en "+places.get(0).toString());
                     Log.d("Airport", "Nearest places: " + places);
                 }
             }
@@ -122,5 +131,31 @@ public class MainActivity extends AppCompatActivity {
         cerca.setText(lugares.get(0).toString());
         med.setText(lugares.get(1).toString());
         lejos.setText(lugares.get(2).toString());
+    }
+
+    private void sendRequest(String nombre){
+        final TextView mTextView = (TextView) findViewById(R.id.statusText);
+
+
+        // Instantiate the RequestQueue.
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="http://estimote.amarellodev.com/save.php?u="+nombre.toString();
+
+        // Request a string response from the provided URL.
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        // Display the first 500 characters of the response string.
+                        mTextView.setText("respuestaes: "+ response.toString());
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                mTextView.setText("noFunciono!");
+            }
+        });
+        // Add the request to the RequestQueue.
+        queue.add(stringRequest);
     }
 }

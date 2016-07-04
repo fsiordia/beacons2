@@ -88,4 +88,13 @@
         android:layout_below="@+id/textView3"
         android:layout_alignStart="@+id/cercaText" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Estado"
+        android:id="@+id/statusText"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>
