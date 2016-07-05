@@ -14,10 +14,9 @@
         android:layout_height="wrap_content"
         android:inputType="textPersonName"
         android:ems="10"
-        android:id="@+id/nombre"
+        android:id="@+id/nombreText"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:editable="false"
         android:hint="nombre" />
 
     <Button
@@ -25,9 +24,8 @@
         android:layout_height="wrap_content"
         android:text="Guardar"
         android:id="@+id/guardarButton"
-        android:layout_below="@+id/nombre"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="23dp" />
+        android:layout_below="@+id/nombreText"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -95,6 +93,15 @@
         android:text="Estado"
         android:id="@+id/statusText"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Nombre Guardado:"
+        android:id="@+id/savedName"
+        android:layout_below="@+id/guardarButton"
         android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

@@ -1,8 +1,12 @@
 package mx.com.amarello.fsiordia.beacons2;
 
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -17,12 +21,14 @@ import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
 import com.estimote.sdk.Region;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.net.URLEncoder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,6 +38,11 @@ public class MainActivity extends AppCompatActivity {
     TextView cerca;
     TextView med;
     TextView lejos;
+
+    EditText nombreTextEdit;
+    Button guardarBoton;
+    TextView nombreGuardado;
+
 
     final String idBeacons = new String("10203040-1010-0000-BEBE-FEFE21052016");
     //final String idBeacons = new String("B9407F30-F5F8-466E-AFF9-25556B57FE6D");
@@ -46,7 +57,8 @@ public class MainActivity extends AppCompatActivity {
 
     public static final String PREFS_NAME = "MyPrefsFile";
 
-    // TODO: replace "<major>:<minor>" strings to match your own beacons.
+
+
     static {
         Map<String, List<String>> placesByBeacons = new HashMap<>();
         placesByBeacons.put(salaJuntas, new ArrayList<String>() {{
@@ -66,6 +78,32 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        // find View-elements
+        nombreTextEdit = (EditText) findViewById(R.id.nombreText);
+        nombreGuardado = (TextView) findViewById(R.id.savedName);
+        guardarBoton = (Button) findViewById(R.id.guardarButton);
+
+
+        View.OnClickListener oclBtnGuardar = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            // change text of the TextView (tvOut)
+                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("nombre", nombreTextEdit.getText().toString());
+                nombreGuardado.setText(nombreTextEdit.getText().toString());
+                editor.commit();
+            }
+        };
+
+        // assign click listener to the OK button (btnOK)
+        guardarBoton.setOnClickListener(oclBtnGuardar);
+        // Restore preferences
+
+
+
 
         cerca=new TextView(this);
         cerca=(TextView)findViewById(R.id.cercaText);
@@ -89,8 +127,15 @@ public class MainActivity extends AppCompatActivity {
                     // TODO: update the UI here
 
                     updateInterfaz(places);
-                    sendRequest("Paco"+" está en "+places.get(0).toString());
-                    Log.d("Airport", "Nearest places: " + places);
+                    SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                    String nombreGuardado = settings.getString("nombre", "Visitante");
+
+                    String statusBeaconMsj = new String(nombreGuardado.toString()+" " + places.get(0).toString());
+
+
+
+                    sendRequest(statusBeaconMsj);
+                    Log.d("Enviamos el mensaje: ",statusBeaconMsj);
                 }
             }
         });
@@ -133,13 +178,19 @@ public class MainActivity extends AppCompatActivity {
         lejos.setText(lugares.get(2).toString());
     }
 
-    private void sendRequest(String nombre){
+    private void sendRequest(String mensaje){
         final TextView mTextView = (TextView) findViewById(R.id.statusText);
 
+        String mensajeEncoded = new String("visitante");
+        try {
+            mensajeEncoded = URLEncoder.encode(mensaje.toString(), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
 
         // Instantiate the RequestQueue.
         RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://estimote.amarellodev.com/save.php?u="+nombre.toString();
+        String url ="http://estimote.amarellodev.com/save.php?u=" + mensajeEncoded;
 
         // Request a string response from the provided URL.
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
